@@ -1,49 +1,50 @@
 pipeline{
+    
     tools{
-       
-        maven 'mymaven'
+        jdk 'myjava'
+        maven 'MyMaven'
     }
-	agent any
-      stages{
-           stage('Checkout'){
-	    
-               steps{
-		 echo 'cloning'
-                 git 'https://github.com/sirMoksh/DevOpsCodeDemo.git'
-              }
-          }
-          stage('Compile'){
+    
+    agent any
+    
+    stages{
+
+        stage('1.CloneRepo')
+        {
+           
+            steps{
+                git 'https://github.com/Sonal0409/DevOpsCodeDemo.git'
+            }
+        }
+        stage('2.Compile the code')
+        {
              
-              steps{
-                  echo 'complie the code..'
-                  sh 'mvn compile'
-	      }
-          }
-          stage('CodeReview'){
-		  
-              steps{
-		    
-		  echo 'codeReview'
-                  sh 'mvn pmd:pmd'
-              }
-          }
-           stage('UnitTest'){
-		  
-              steps{
-	         
-                  sh 'mvn test'
-              }
-          
-          }
+            steps{
+             sh 'mvn compile'
+            }
+        }
+        stage('3.Code Review'){
+            steps{
+            sh 'mvn pmd:pmd'
+            }
+        }
         
-          stage('Package'){
-		  
-              steps{
-		  
-                  sh 'mvn package'
-              }
-          }
-	     
-          
-      }
+        stage('4.Unit Testing'){
+            steps{
+                sh 'mvn test'
+            }
+            post{
+                success{
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        
+        stage('5.Package'){
+            steps{
+                sh 'mvn package'
+            }
+        }
+        
+    }
 }
